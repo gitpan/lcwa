@@ -1,0 +1,13 @@
+#####################################################################
+##
+##  lcwa_boot.pl -- Third-Party Module Bootstrapping
+##
+#####################################################################
+
+#   bootstrapping private installed modules
+use lib "@MM_INSTALLPRIVLIB@";
+use lib	"@MM_INSTALLARCHLIB@";
+use lib	"@MM_INSTALLSITELIB@";
+use lib	"@MM_INSTALLSITEARCH@";
+
+1;

@@ -1,0 +1,184 @@
+##
+##  top-level Makefile
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+PATH_PERL       = @PATH_PERL@
+INSTALL         = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA    = @INSTALL_DATA@
+MKDIR           = ./etc/mkinstalldirs
+
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+bindir          = @bindir@
+libdir          = @libdir@
+mandir          = ${exec_prefix}/man
+
+#   Version Naming
+NEWVERS = \
+	./etc/newvers -l perl -p LCWA $$OPT lcwa_vers.pl; \
+	V=`./etc/newvers -l perl -D lcwa_vers.pl`;\
+	sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README
+UPDATEVERS = \
+	V=`./etc/newvers -l perl -d lcwa_vers.pl`;\
+	./etc/newvers -l perl -p LCWA -r $$V lcwa_vers.pl; \
+	V=`./etc/newvers -l perl -D lcwa_vers.pl`;\
+	sed -e "s/Version .*(.*)/Version $$V/g" <README >README.n && mv README.n README
+
+# ------------------------------------------------
+#   THE DEFAULT TARGETS
+# ------------------------------------------------
+
+all: lcwa lcwa.1 lib_subdir
+
+# ------------------------------------------------
+#   THE CONFIGURATION SUPPORT
+# ------------------------------------------------
+
+config: configure
+
+configure: configure.in 
+	rm -f configure
+	autoconf configure.in >configure
+	./etc/fixconfigure configure
+	chmod 770 configure
+
+# ------------------------------------------------
+#   THE PROGRAM
+# ------------------------------------------------
+
+lcwa: lcwa_main.pl lcwa_boot.pl lcwa_vers.pl
+	./etc/expand lcwa_main.pl | ./etc/crunch README >lcwa.tmp
+	sed -e "s|\@PATH_PERL\@|$(PATH_PERL)|" <lcwa.tmp >lcwa
+	chmod a+x lcwa
+	rm lcwa.tmp
+
+# ------------------------------------------------
+#   THE DOCUMENTATION
+# ------------------------------------------------
+
+lcwa.1: lcwa.pod
+	pod2man --section=1 --center="EN Tools" --release="EN Tools" $> >$@
+
+lcwa.1.txt: lcwa.1
+	groff -Tascii -man lcwa.1 >lcwa.1.txt
+
+lcwa.1.ps: lcwa.1
+	groff -Tps -man lcwa.1 >lcwa.1.ps
+
+# ------------------------------------------------
+#   THE PERL LIBRARY FILES
+# ------------------------------------------------
+
+lib_subdir:
+	@cd lib; $(MAKE)
+
+lib_subdir_install:
+	@cd lib; $(MAKE) install
+
+lib_subdir_clean:
+	@cd lib; $(MAKE) clean
+
+lib_subdir_distclean:
+	@cd lib; $(MAKE) distclean
+
+# ------------------------------------------------
+#   DISTRIBUTION
+# ------------------------------------------------
+
+_GETDISTINFO = \
+    _version=`$(top_srcdir)/etc/newvers -lperl -d lcwa_vers.pl`; \
+    _date=`date '+%y%m%d_%H%M'`;
+
+_BUILDDIST = \
+    _cwd=`pwd`; \
+    echo "Creating tarball..."; \
+    cd $(top_srcdir); \
+    tar cvf - * |\
+    tardy --user_number=1000  --user_name=rse \
+          --group_number=1000 --group_name=en \
+          --prefix=$${_distname} - |\
+    gzip >$${_tarball}; \
+    echo "Done"; \
+    cd $$_cwd; ls -l $${_tarball};
+
+release: distclean fixperm
+	@$(_GETDISTINFO) \
+    _distname="lcwa-$${_version}"; \
+    _tarball="$${_distname}.tar.gz"; \
+    echo "Release Distribution: LCWA Version $$_version"; \
+    $(_BUILDDIST)
+
+snap: 
+	@$(_GETDISTINFO) \
+    _distname="lcwa-$${_version}-$${_date}-SNAP"; \
+    _tarball="$${_distname}.tar.gz"; \
+    echo "Snap of whole source tree: LCWA Version $$_version as of $$_date"; \
+    $(_BUILDDIST)
+
+new-version:
+	OPT=-iv; $(NEWVERS)
+
+new-revision:
+	OPT=-ir; $(NEWVERS)
+
+new-patchlevel:
+	OPT=-iP; $(NEWVERS)
+
+new-release:
+	OPT=-r$(R); $(NEWVERS)
+
+update-version:
+	$(UPDATEVERS)
+
+fixperm:
+	./etc/fixperm *
+
+# ------------------------------------------------
+#   INSTALLATION
+# ------------------------------------------------
+
+install: all
+	$(MKDIR) $(bindir)
+	$(MKDIR) $(libdir)
+	$(MKDIR) $(mandir)
+	$(INSTALL_PROGRAM) lcwa $(bindir)/lcwa
+	$(INSTALL_DATA) lcwa.1 $(mandir)/lcwa.1
+	@$(MAKE) lib_subdir_install
+
+# ------------------------------------------------
+#   CLEANUP
+# ------------------------------------------------
+
+clean: 
+	-rm -f lcwa
+	@$(MAKE) lib_subdir_clean
+
+distclean: 
+	@$(MAKE) clean
+	@$(MAKE) lib_subdir_distclean
+	-rm -f lcwa.1.ps
+	-rm -f lcwa.1.txt
+	-rm -f config.cache
+	-rm -f config.log
+	-rm -f config.status
+	-rm -f Makefile
+	-rm -f lcwa_boot.pl
+
+realclean: 
+	@$(MAKE) distclean
+	-rm -f lcwa.1 
+
+##EOF##

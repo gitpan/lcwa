@@ -1,0 +1,8 @@
+BitVector.c
+BitVector.h
+Definitions.h
+MANIFEST
+Makefile.PL
+Vector.pm
+Vector.xs
+typemap

@@ -1,0 +1,172 @@
+##
+##  lib/Makefile
+##  Copyright (c) 1997 Ralf S. Engelschall, All Rights Reserved. 
+##
+
+# ------------------------------------------------
+#   DEFINITIONS
+# ------------------------------------------------
+
+@SET_MAKE@
+SHELL = /bin/sh
+
+top_srcdir      = @top_srcdir@
+srcdir          = @srcdir@
+VPATH           = @srcdir@
+
+PATH_PERL       = @PATH_PERL@
+INSTALL         = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA    = @INSTALL_DATA@
+
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+bindir          = @bindir@
+libsubdir       = @libsubdir@
+libdir          = $(prefix)/lib$(libsubdir)
+mandir          = ${exec_prefix}/man
+
+have_getoptlong = @HAVE_GETOPTLONG@
+have_bitvector  = @HAVE_BITVECTOR@
+have_timedate   = @HAVE_TIMEDATE@
+have_io         = @HAVE_IO@
+have_lwp        = @HAVE_LWP@
+
+# ------------------------------------------------
+#   TARGETS
+# ------------------------------------------------
+
+all:
+	@if [ $(have_getoptlong) = 0 ]; then \
+		echo "===> lib/getoptlong (all)"; \
+		if [ ! -f getoptlong/.configured ]; then \
+		    cd getoptlong; $(PATH_PERL) Makefile.PL PREFIX=$(libdir)/perl; \
+			touch .configured; \
+			cd ..; \
+		fi; \
+		cd getoptlong; $(MAKE); \
+		echo "<=== lib/getoptlong"; \
+	fi
+	@if [ $(have_bitvector) = 0 ]; then \
+		echo "===> lib/bitvector (all)"; \
+		if [ ! -f bitvector/.configured ]; then \
+		    cd bitvector; $(PATH_PERL) Makefile.PL PREFIX=$(libdir)/perl; \
+			touch .configured; \
+			cd ..; \
+		fi; \
+		cd bitvector; $(MAKE); \
+		echo "<=== lib/bitvector"; \
+	fi
+	@if [ $(have_timedate) = 0 ]; then \
+		echo "===> lib/timedate (all)"; \
+		if [ ! -f timedate/.configured ]; then \
+		    cd timedate; $(PATH_PERL) Makefile.PL PREFIX=$(libdir)/perl; \
+			touch .configured; \
+			cd ..; \
+		fi; \
+		cd timedate; $(MAKE); \
+		echo "<=== lib/timedate"; \
+	fi
+	@if [ $(have_io) = 0 ]; then \
+		echo "===> lib/io (all)"; \
+		if [ ! -f io/.configured ]; then \
+		    cd io; $(PATH_PERL) Makefile.PL PREFIX=$(libdir)/perl; \
+			touch .configured; \
+			cd ..; \
+		fi; \
+		cd io; $(MAKE); \
+		echo "<=== lib/io"; \
+	fi
+	@if [ $(have_lwp) = 0 ]; then \
+		echo "===> lib/lwp (all)"; \
+		if [ ! -f lwp/.configured ]; then \
+		    cd lwp; $(PATH_PERL) Makefile.PL PREFIX=$(libdir)/perl; \
+			touch .configured; \
+			cd ..; \
+		fi; \
+		cd lwp; $(MAKE); \
+		echo "<=== lib/lwp"; \
+	fi
+
+install:
+	@if [ $(have_getoptlong) = 0 ]; then \
+		echo "===> lib/getoptlong (install)"; \
+		cd getoptlong; $(MAKE) pure_install WARN_IF_OLD_PACKLIST=: PREFIX=$(libdir)/perl || true; \
+		echo "<=== lib/getoptlong"; \
+	fi
+	@if [ $(have_bitvector) = 0 ]; then \
+		echo "===> lib/bitvector (install)"; \
+		cd bitvector; $(MAKE) pure_install WARN_IF_OLD_PACKLIST=: PREFIX=$(libdir)/perl || true; \
+		echo "<=== lib/bitvector"; \
+	fi
+	@if [ $(have_timedate) = 0 ]; then \
+		echo "===> lib/timedate (install)"; \
+		cd timedate; $(MAKE) pure_install WARN_IF_OLD_PACKLIST=: PREFIX=$(libdir)/perl || true; \
+		echo "<=== lib/timedate"; \
+	fi
+	@if [ $(have_io) = 0 ]; then \
+		echo "===> lib/io (install)"; \
+		cd io; $(MAKE) pure_install WARN_IF_OLD_PACKLIST=: PREFIX=$(libdir)/perl || true; \
+		echo "<=== lib/io"; \
+	fi
+	@if [ $(have_lwp) = 0 ]; then \
+		echo "===> lib/lwp (install)"; \
+		cd lwp; $(MAKE) pure_install WARN_IF_OLD_PACKLIST=: PREFIX=$(libdir)/perl || true; \
+		echo "<=== lib/lwp"; \
+	fi
+	@if [ -d $(libdir)/perl/man ]; then \
+		rm -rf $(libdir)/perl/man; \
+	fi
+
+clean:
+	@if [ $(have_getoptlong) = 0 ]; then \
+		echo "===> lib/getoptlong (clean)"; \
+		if [ -f getoptlong/.configured ]; then \
+		    cd getoptlong; $(MAKE) clean; \
+	        mv Makefile.old Makefile 2>/dev/null; \
+		fi; \
+		echo "<=== lib/getoptlong"; \
+	fi
+	@if [ $(have_bitvector) = 0 ]; then \
+		echo "===> lib/bitvector (clean)"; \
+		if [ -f bitvector/.configured ]; then \
+		    cd bitvector; $(MAKE) clean; \
+	        mv Makefile.old Makefile 2>/dev/null; \
+		fi; \
+		echo "<=== lib/bitvector"; \
+	fi
+	@if [ $(have_timedate) = 0 ]; then \
+		echo "===> lib/timedate (clean)"; \
+		if [ -f timedate/.configured ]; then \
+		    cd timedate; $(MAKE) clean; \
+	        mv Makefile.old Makefile 2>/dev/null; \
+		fi; \
+		echo "<=== lib/timedate"; \
+	fi
+	@if [ $(have_io) = 0 ]; then \
+		echo "===> lib/io (clean)"; \
+		if [ -f io/.configured ]; then \
+		    cd io; $(MAKE) clean; \
+	        mv Makefile.old Makefile 2>/dev/null; \
+		fi; \
+		echo "<=== lib/io"; \
+	fi
+	@if [ $(have_lwp) = 0 ]; then \
+		echo "===> lib/lwp (clean)"; \
+		if [ -f lwp/.configured ]; then \
+		    cd lwp; $(MAKE) clean; \
+	        mv Makefile.old Makefile 2>/dev/null; \
+		fi; \
+		echo "<=== lib/lwp"; \
+	fi
+
+distclean:
+	@$(MAKE) clean
+	@cd getoptlong;      rm -f .configured Makefile.old Makefile
+	@cd bitvector;       rm -f .configured Makefile.old Makefile
+	@cd timedate;        rm -f .configured Makefile.old Makefile
+	@cd io;              rm -f .configured Makefile.old Makefile
+	@cd lwp;             rm -f .configured Makefile.old Makefile
+	-rm -f Makefile
+
+##EOF##

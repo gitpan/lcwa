@@ -1,0 +1,165 @@
+#####################################################################
+##
+##  lcwa.pod -- LCWA Manpage in POD Format
+##
+#####################################################################
+
+=head1 NAME
+
+LCWA - Last Changes Web Agent
+
+=head1 SYNOPSIS
+
+B<lcwa>
+B<c>[B<rawl>]
+[B<-d> I<file>]
+[B<-c> I<num>]
+[B<-d> I<num>]
+[B<-r> I<pattern>]
+[B<-i> I<pattern>]
+[B<-e> I<pattern>]
+[B<-b> I<file>]
+[B<-s> I<file>]
+[B<-l> I<file>]
+[B<-v> I<level>]
+[I<url> ...]
+
+B<lcwa>
+B<q>[B<uery>]
+[B<-d> I<file>]
+[B<-f> I<format>]
+[I<timespec> ...]
+
+B<lcwa>
+[B<-V>]
+
+=head1 DESCRIPTION
+
+F<Lcwa> is a web agent which determines the last changes time of documents in
+an Intranet's webcluster by crawling in a fast way through its webareas via
+HTTP. It was written with speed in mind, so it uses a variable number of
+pre-forked crawling clients which work in parallel.  They are coordinated via
+a server which implements a shared URL stack and a common result pool. 
+
+Each client first pops off an URL from the stack, and retrieves the document,
+determines its last changes time and then sends this information back to the
+result pool.  Additionally if the currently fetched document is of MIME type
+C<text/html>, it parses out all anchor, image and frameset hyperlinks it
+contains and pushes these back to the shared URL stack, so they can be
+processed the next time by itself or the other parallel running clients.
+
+The HTTP crawling is done in optimized way: First the request method (GET or
+HEAD) is determined from the URL and the document fetched. If the method was
+HEAD and the MIME-type now is C<text/html> the document is requested again
+with method GET. Then when the MTime cannot be determined but the Server is an
+Apache one a third request is done to retrieve the information with a possibly
+installed F<mod_peephole> if option B<-p> is given.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-D> I<file>
+
+Sets the database file where the crawled information is stored.  Its format is
+one entry per line consisting of an URL followed by a whitespace followed by
+the corresponding timestamp (or an error code when the timestamp couldn't
+determined).
+
+=item B<-c> I<num>
+
+Start I<num> of crawling clients. Default is I<num>=2, i.e.  only one client
+which determines the last changes times via HTTP crawling. If you specify more
+clients the crawling is faster but because they are created via pre-forking
+this is more memory consuming. Expect 3 MB RAM requirement per client.
+
+=item B<-a> I<type>
+
+This sets the crawling algorithm: I<type>=C<d> means depth first crawling
+while I<type>=C<w> means width crawling (default).
+
+=item B<-d> I<spec>
+
+This sets the URL path depth restriction, i.e. when the path depth does not
+fall into I<spec> the URL is not crawled. Per default there is no such
+restriction. Here are the accepted syntax variants for I<spec>:
+
+   spec  depth
+         min max
+   ----  --- ---
+   N     N   N
+   >N    N+1 oo
+   <N    1   N-1
+   N-M   N   M
+   +N    X   X+N
+   -N    X   X-N
+
+To make it clear what the depth means here is an example: the URL
+C<http://foo.bar.com/any/url/to/data?some&query> is of depth 4 while
+C<http://foo.bar.com/any/url/to/data/?some&query> is of depth 5. The rule is
+this: For depth only the path part of an URL counts and here each slash
+increased the depth, starting with depth=1 for the root-path C</>.
+
+=item B<-r> I<pattern>
+
+This restricts the crawled URLs by a regular expression pattern, i.e. only
+URLs are pushed back to the shared URL stack for further processing which
+match <b>ALL THOSE</b> I<pattern>.
+
+=item B<-i> I<pattern>
+
+This restricts the crawled URLs by a regular expression pattern, i.e. URLs
+which match <b>AT LEAST ONE</b> I<pattern> are B<forced> to be pushed back to
+the shared URL stack for further processing. If <b>NONE</b> matches the
+URL is not accepted.
+
+=item B<-e> I<pattern>
+
+This restricts the crawled URLs by a regular expression pattern, i.e. URLs
+<b>NOT</b> which match <b>ALL THOSE</b> I<patterns> are B<forced> to be pushed
+back to the shared URL stack for further processing. If <b>ANY</b> matches the
+URL is not accepted.
+
+=item B<-b> I<file>
+
+Sets the filename of the temporarily used URL brainfile which is needed while
+crawling to determine which URLs have been already seen.
+
+=item B<-s> I<file>
+
+Sets the filename of the temporarily used stack swapfile which is needed while
+crawling to swap out the in-core stack to avoid to huge memory consumption.
+
+=item B<-l> I<file>
+
+Sets the filename of the logfile which shows processing information of the
+crawling process. Only interesting for debugging.
+
+=item B<-v> I<level>
+
+This sets verbose mode to I<level> where some processing information will be
+given on the console.
+
+=item B<-V>
+
+Displays the version string.
+
+=back
+
+=head1 EXAMPLES
+
+  $ lcwa -c40 \
+         -r '^http://[a-zA-Z0-9._]+\.sdm\.de/' \
+         -i '.*\.p?html$' -i '.*/$' \
+         -d 4 \
+         -o sww.times.db \
+         http://sww.sdm.de/
+
+=head1 AUTHOR
+
+ Ralf S. Engelschall
+ rse@engelschall.com
+ www.engelschall.com
+
+=cut
+

@@ -1,0 +1,40 @@
+   _                    
+  | | _____      ____ _ 
+  | |/ __\ \ /\ / / _` |
+  | | (__ \ V  V / (_| |
+  |_|\___| \_/\_/ \__,_|
+                        
+  lcwa -- Last Changes Web Agent
+
+  Version 1.0.4 (03-09-1997)
+
+  LCWA is a web agent which determines the last changes time of documents in
+  an Intranet's webcluster by crawling in a fast way through its webareas via
+  HTTP.  It was written with speed in mind, so it uses a variable number of
+  pre-forked crawling clients which work in parallel.  They are coordinated
+  via a server which implements a shared URL stack and a common result pool.
+  Each client first pops off an URL from the stack, retrieves the document,
+  determines its last changes time and then sends it back to the result pool.
+  Additionally if the currently fetched document is of type HTML, it parses
+  out all hyperlinks it contains and pushes these back to the shared stack, so
+  they can be processed the next time by itself or the other clients.
+
+  The documentation and latest release can be found on
+  http://www.engelschall.com/sw/lcwa/
+
+  Copyright (c) 1997 Ralf S. Engelschall, All rights reserved.
+
+  This program is free software; it may be redistributed and/or modified
+  only under the terms of either the Artistic License or the GNU General
+  Public License, which may be found in the distribution of this program.
+  Look at the files ARTISTIC and COPYING.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either the
+  Artistic License or the GNU General Public License for more details.
+
+                              Ralf S. Engelschall
+                              rse@engelschall.com
+                              www.engelschall.com
+

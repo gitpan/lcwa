@@ -1,0 +1,55 @@
+dnl ##
+dnl ##  configure.in -- GNU autoconf configuration source
+dnl ##
+
+AC_PREREQ(2.0)
+AC_REVISION($Revision: 1.0$)
+echo "Configuring for LCWA `./etc/newvers -l perl -D lcwa_vers.pl`"
+
+AC_INIT(README)
+AC_CONFIG_AUX_DIR(etc)
+AC_PREFIX_DEFAULT(/usr/local)
+
+dnl ##  fix installation paths
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+eval "dir=$prefix"
+case $dir in
+    *lcwa* ) libsubdir= ;;
+	     * ) libsubdir="/lcwa" ;;
+esac
+AC_SUBST(libsubdir)
+tmpdir=/tmp
+AC_SUBST(tmpdir)
+
+AC_SET_MAKE
+AC_PROG_INSTALL
+
+AC_CHECK_PERL_INTERPRETER
+AC_CHECK_PERL_MM_PATHS
+AC_ARG_WITH(openworld,dnl
+[  --with-openworld        try to use system-wide copies of Perl modules],[
+AC_CHECK_PERL_MODULE(Getopt::Long, 2.12, GETOPTLONG)
+AC_CHECK_PERL_MODULE(Bit::Vector, 4.2, BITVECTOR)
+AC_CHECK_PERL_MODULE(Date::Format, 2.07, TIMEDATE)
+AC_CHECK_PERL_MODULE(IO::File, 1.07, IO)
+AC_CHECK_PERL_MODULE(LWP, 5.14, LWP)
+],[dnl
+HAVE_GETOPTLONG=0
+HAVE_BITVECTOR=0
+HAVE_TIMEDATE=0
+HAVE_IO=0
+HAVE_LWP=0
+])dnl
+
+AC_OUTPUT(dnl
+Makefile dnl
+lib/Makefile dnl
+lcwa_boot.pl dnl
+etc/expand dnl
+etc/crunch dnl
+,dnl
+chmod a+x etc/expand
+chmod a+x etc/crunch
+)dnl
+
+dnl ##EOF##

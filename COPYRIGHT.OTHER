@@ -1,0 +1,40 @@
+
+  C O P Y R I G H T . O T H E R
+  
+  LCWA -- Latest Changes Web Agent
+
+  This file lists all foreign LCWA parts written by other authors. 
+  I want to thank all of them both for writing such good software
+  and to make it freely available. The credit for these parts is yours.
+
+  For the general Copyright on LCWA see the file COPYRIGHT!
+
+                              Ralf S. Engelschall
+                              rse@engelschall.com
+                              www.engelschall.com
+  ________________________________________________________________________
+
+
+  GetoptLong 2.12 [lib/getoptlong/]
+      Copyright (c) Johan Vromans <jvromans@squirrel.nl>
+      http://www.perl.com/CPAN/authors/id/JV/
+
+  Bit-Vector 4.2 [lib/bitvector/]
+      Copyright (c) Steffen Beyer, <sb@sdm.de>
+      http://www.perl.com/CPAN/authors/id/STBEY/
+
+  IO-1.1801 [lib/io/]
+      Copyright (c) Graham Barr <bodg@tiuk.ti.com>
+      http://www.perl.com/CPAN/authors/id/GBARR/
+
+  libwww-perl-5.14 [lib/lwp/]
+      Copyright (c) Gisle Aas <aas@sn.no>
+      http://www.sn.no/libwww-perl/
+
+  TimeDate-1.07 [lib/timedate/]
+      Copyright (c) Graham Barr <bodg@tiuk.ti.com>
+      http://www.perl.com/CPAN/authors/id/GBARR/
+
+  install.sh [etc/]
+      Copyright (c) the X Consortium
+
